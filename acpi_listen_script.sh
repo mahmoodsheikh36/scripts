@@ -6,6 +6,7 @@
 
 while read line
 do
+    # headphones
     if [[ $line == *"headphone"* ]]; then
         if [[ $line == *" plug"* ]]; then
             echo "headphones plugged! woo!"
@@ -13,8 +14,20 @@ do
         fi
         if [[ $line == *"unplug"* ]]; then
             echo 'headphones unplugged :('
-            amixer set Master 0
-            playerctl pause
+            # amixer set Master 0
+            # playerctl pause
+        fi
+    fi
+
+    # screen lid
+    if [[ "$line" == *"LID"* ]]; then
+        if [[ "$line" == *"close"* ]]; then
+            echo "lid closed"
+            i3lock -i ~/pictures/lockscreen.png
+        fi
+        if [[ "$line" == *"open"* ]]; then
+            echo "lid opened"
+            sudo systemctl restart NetworkManager
         fi
     fi
 done < "${1:-/dev/stdin}"
