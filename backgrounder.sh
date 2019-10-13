@@ -22,7 +22,7 @@ do
             sleep 0.01
         done
 
-        sleep 30 # display each picture for 100 seconds
+        sleep 60 # display each picture for 100 seconds
 
         # start dimming current picture
         for j in {1..5}
