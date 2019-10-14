@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # backgrounder.sh - fade transition between wallpapers
 # use like this: ./backgrounder.sh ~/wallpaper
 
@@ -19,38 +19,38 @@ generate_dimmed_pictures() {
     for ((i=1; i<=$image_count; i++))
     do
         dim_percentage=0%
-        image=$(echo $images | cut -d ' ' -f "$i")
+        image=$(basename `echo $images | cut -d ' ' -f "$i"`)
         for ((j=0; j<=$dimmed_images_count; j++))
         do
+            dim_percentage="`expr 100 - $j \* $(expr 100 / $dimmed_images_count)`%"
             file_to_save_dimmed_image="${image_cache_dir}/$image-$dim_percentage"
             if [ ! -f $file_to_save_dimmed_image ]; then
-                dim_percentage="`expr 100 - $j \* $(expr 100 / $dimmed_images_count)`%"
                 convert -fill black -colorize "$dim_percentage" "$image" "$file_to_save_dimmed_image"
             fi
         done
         notify.sh "generated dimmed images for $image"
     done
+    notify.sh "done generating dimmed images"
 }
 
 while [ true ]
 do
-
     for ((i=1; i<=$image_count; i++))
     do
         image=$(echo $images | cut -d ' ' -f "$i")
-        echo "require('naughty').notify({title='System Wallpaper', text='set wallpaper to\n`basename $image`', icon='${image_dir}/$image', icon_size=200})" | awesome-client
+        echo "require('naughty').notify({title='System Wallpaper', text='set wallpaper to\n$image', icon='${image_dir}/$image', icon_size=200})" | awesome-client
 
         dim_percentage=100%
         for ((j=0; j<=$dimmed_images_count; j++))
         do
             image_file="${image_cache_dir}/$image-$dim_percentage"
-            echo $image_file
             if [ ! -f $image_file ]; then
                 notify.sh "regenerating dimmed images"
                 generate_dimmed_pictures
             fi
-            hsetroot -cover "$image_file"
+            hsetroot -fill "$image_file"
             dim_percentage="`expr 100 - $(expr $j + 1) \* $(expr 100 / $dimmed_images_count)`%"
+            echo $image_file
             sleep 0.01
         done
 
@@ -67,7 +67,7 @@ do
                 notify.sh "regenerating dimmed images"
                 generate_dimmed_pictures
             fi
-            hsetroot -cover "$image_file"
+            hsetroot -fill "$image_file"
             sleep 0.01
         done
 
