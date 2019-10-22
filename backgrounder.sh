@@ -42,7 +42,7 @@ generate_dimmed_pictures() {
             notify-send -i "${image_dir}/$image" "System Wallpaper Manager" "generated dimmed images for\n$image"
         fi
     done
-    notify-send "System Wallpaper Manager" "done generating dimmed images" -t 10
+    notify-send "System Wallpaper Manager" "done generating dimmed images" -t 10000
 }
 
 while [ true ]
@@ -63,7 +63,7 @@ do
             dim_percentage="`expr 100 - $(expr $j + 1) \* $(expr 100 / $dimmed_images_count)`%"
             sleep 0.01
         done
-        notify-send -i "${image_dir}/$image" "System Wallpaper Manager" "set wallpaper to\n$image" -t 3
+        notify-send -i "${image_dir}/$image" "System Wallpaper Manager" "set wallpaper to\n$image" -t 3000
 
         sleep $image_time
 
