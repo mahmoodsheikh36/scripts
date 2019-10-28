@@ -13,9 +13,15 @@ dimmed_images_count=10
 image_count=$(echo $images | wc -w)
 screen_size=`xrandr | grep primary | cut -d " " -f4 | cut -d "+" -f1`
 image_time=200 # display each image for 200 seconds
+notify_on_wallpaper_change=1
 
 if [ ! -z "$2" ]; then
     image_time="$2"
+    if [ ! -z "$3" ]; then
+        if [ ! "$3" = 1 ]; then
+            notify_on_wallpaper_change=0
+        fi
+    fi
 fi
 
 # create cache directory
@@ -39,10 +45,10 @@ generate_dimmed_pictures() {
             fi
         done
         if [ $generated_new_images = 1 ]; then
-            notify-send -i "${image_dir}/$image" "System Wallpaper Manager" "generated dimmed images for\n$image"
+            notify-send -i "${image_dir}/$image" "Wallpaper Manager" "generated dimmed images for\n$image"
         fi
     done
-    notify-send "System Wallpaper Manager" "done generating dimmed images" -t 10000
+    notify-send "Wallpaper Manager" "done generating dimmed images" -t 10000
 }
 
 while [ true ]
@@ -56,14 +62,16 @@ do
         do
             image_file="${image_cache_dir}/$image-$dim_percentage"
             if [ ! -f $image_file ]; then
-                notify-send "System Wallpaper Manager" "regenerating dimmed images"
+                notify-send "Wallpaper Manager" "regenerating dimmed images"
                 generate_dimmed_pictures
             fi
             hsetroot -fill "$image_file" > /dev/null
             dim_percentage="`expr 100 - $(expr $j + 1) \* $(expr 100 / $dimmed_images_count)`%"
             sleep 0.01
         done
-        notify-send -i "${image_dir}/$image" "System Wallpaper Manager" "set wallpaper to\n$image" -t 3000
+        if [ notify_on_wallpaper_change = 1 ]; then
+            notify-send -i "${image_dir}/$image" "Wallpaper Manager" "set wallpaper to\n$image" -t 3000
+        fi
 
         sleep $image_time
 
@@ -74,7 +82,7 @@ do
             dim_percentage="`expr $(expr $j + 1) \* $(expr 100 / $dimmed_images_count)`%"
             image_file="${image_cache_dir}/$image-$dim_percentage"
             if [ ! -f $image_file ]; then
-                notify-esnd "System Wallpaper Manager" "regenerating dimmed images"
+                notify-esnd "Wallpaper Manager" "regenerating dimmed images"
                 generate_dimmed_pictures
             fi
             hsetroot -fill "$image_file" > /dev/null

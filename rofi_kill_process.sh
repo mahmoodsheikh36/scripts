@@ -1,18 +1,15 @@
 #!/bin/sh
 # kill a running process using rofi
 
-process_name=`ps -e | awk '{ print $4 }' | sort -u | rofi -dmenu -i -p "process"`
+process_name=`ps -e | awk '{ print $4 }' | sort -u | rofi -dmenu -i -p "process" -sort`
 if [ ! -z $process_name ]; then
-    for process in $(pgrep "$process_name");
+    for process in $(ps -e | grep " $process_name$" | awk '{ print $1 }');
     do
         if [ ! -z $process ]; then
-            kill $process
-            if [ ! -z `pgrep $process` ]; then
-                kill -9 $process
-            fi
+            kill -9 $process
         fi
     done
-    if [ -z `pgrep $process` ]; then
+    if [ -z "$(ps -e | grep " $process_name$")" ]; then
         notify-send "System" "$process_name killed successfully"
     fi
 fi
