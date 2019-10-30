@@ -50,7 +50,7 @@ if __name__ == '__main__':
                         if prev_song == song and prev_artist == artist:
                             if prev_index > index:
                                 print("new index", index)
-                                if index < 200:
+                                if index < 50:
                                     send_notification("{} - {} was {}th and is now {}th".format(song, artist, prev_index, index))
                         else:
                             print("\"{} - {}\" with index {}".format(song, artist, index))
