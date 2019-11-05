@@ -1,7 +1,7 @@
 #!/bin/sh
-# kill a running process using rofi
+# kill a running process using dmenu
 
-process_name=`ps -e | awk '{ print $4 }' | sort -u | rofi -dmenu -i -p "process" -sort`
+process_name=`ps -e | awk '{ print $4 }' | sort -u | dmenu -l 10 -i -p "process"`
 if [ ! -z $process_name ]; then
     for process in $(ps -e | grep " $process_name$" | awk '{ print $1 }');
     do
