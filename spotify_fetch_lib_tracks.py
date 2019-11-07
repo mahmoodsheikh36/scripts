@@ -17,6 +17,7 @@ all_tracks=[]
 
 initial_data = json.loads(requests.get('https://api.spotify.com/v1/me/tracks?offset=0&limit={}'.format(limit), headers={'Authorization': 'Bearer ' + access_token}).content)
 
+print(initial_data)
 for data in initial_data["items"]:
     track = data["track"]
     all_tracks.append(track)
