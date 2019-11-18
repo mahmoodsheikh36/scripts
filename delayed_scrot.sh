@@ -10,9 +10,13 @@ if [ ! -z "$file_to_save_to" ]; then
     scrot $file_to_save_to
 else
     if [ -d ~/media/scrots ]; then
-        scrot ~/media/scrots/`date | tr " " "_"`
+        file_to_save_to=$(echo ~/media/scrots`date | tr " " "_"`)
+        scrot $file_to_save_to
     else
-        scrot ~/screenshot.png
+        file_to_save_to=~/screenshot.png
+        scrot $file_to_save_to
     fi
 fi
+
+echo "$file_to_save_to" | xclip -selection c
 notify-send "screenshot taken"
