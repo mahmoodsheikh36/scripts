@@ -15,7 +15,9 @@ beautiful.status_text_color = '$brightest_color'
 -- beautiful.wibar_bg = '$darkest_color'
 -- beautiful.wibar_fg = '$avg_color'
 -- screen.primary.mywibox.fg = '$avg_color'
-screen.primary.mywibox.bg = '$darkest_color'
+for s in screen do
+    s.mywibox.bg = '$darkest_color'
+end
 beautiful.bg_systray = '$darkest_color'
 focused_tag = awful.screen.focused().selected_tag
 awful.tag.viewnext(focused_tag.screen)
