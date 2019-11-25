@@ -5,9 +5,9 @@ url_from_last_slash=`echo $1 | rev | cut -d "/" -f1 | rev`
 extension=`echo $url_from_last_slash | rev | cut -d "." -f1 | rev`
 
 case $extension in
-    jpg|png|jpeg)
+    jpg|png|jpeg|gif)
         curl -o /tmp/image "$1"
-        sxiv /tmp/image
+        sxiv -a /tmp/image
         ;;
     *)
         qutebrowser "$1"
