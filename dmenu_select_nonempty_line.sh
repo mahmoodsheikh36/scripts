@@ -6,4 +6,4 @@ in=""
 while read line; do
     in=$in"$line\n"
 done < "${1:-/dev/stdin}"
-echo -en "$in" | grep "^$" -v | rofi -dmenu -i -p "which line?" | tr -d "\n"
+echo -en "$in" | grep "^$" -v | dmenu.sh -l 10 -i -p "which line?" | tr -d "\n"
