@@ -1,12 +1,27 @@
 #!/bin/sh
 
+VOL() {
+    size=10
+    volume=`pactl list sinks | grep Volume | head -1 | awk '{print $5}'`
+    percentage=`echo $volume | tr -d "%"`
+    i=1
+    volume_text="["
+    while [ ! $i -gt $size ]; do
+        if [ $(( percentage + 1 )) -gt $(( ( 100 / $size ) * $i )) ]; then
+            volume_text="$volume_text#"
+        else
+            volume_text="$volume_text-"
+        fi
+        i=$(( i + 1 ))
+    done
+    volume_text="${volume_text}] ($volume)"
+    echo "$volume_text"
+}
 
 while true;
 do
-    time=`date "+%H:%M:%S %d/%m/%y"`
-    statusbar_text="$time"
-    volume=`pactl list sinks | grep Volume | head -1 | awk '{print $5}'`
+    date=`date "+%H:%M:%S %d/%m/%y"`
 
-    xsetroot -name "VOL $volume | DATE $statusbar_text"
-    sleep 0.6
+    xsetroot -name "VOL `VOL` | DATE $date"
+    sleep 0.4
 done
