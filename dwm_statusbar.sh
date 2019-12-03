@@ -7,7 +7,7 @@ VOL() {
     i=1
     volume_text="["
     while [ ! $i -gt $size ]; do
-        if [ $(( percentage + 1 )) -gt $(( ( 100 / $size ) * $i )) ]; then
+        if [ $(( percentage + 2 )) -gt $(( ( 100 / $size ) * $i )) ]; then
             volume_text="$volume_text#"
         else
             volume_text="$volume_text-"
