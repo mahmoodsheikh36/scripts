@@ -6,7 +6,7 @@ if [ ! -z $1 ]; then
     should_open_lyrics_file=$1
 fi
 
-song=`cat ~/.cache/spotify_dmenu/lib_tracks_names | dmenu.sh -p song -i -l 15`
+song=`cat ~/.cache/spotify_dmenu/lib_tracks_names | dmenu -p song -i -l 15`
 if [ "$song" = "" ]; then
     exit 0
 fi

@@ -1,8 +1,9 @@
 #!/bin/sh
+# dwm_statusbar.sh - statusbar script for suckless's dwm
 
 VOL() {
     size=10
-    volume=`pactl list sinks | grep Volume | head -1 | awk '{print $5}'`
+    volume=`pactl list sinks | awk '/^\s*Volume/{print $5}'`
     percentage=`echo $volume | tr -d "%"`
     i=1
     volume_text="["
@@ -18,10 +19,14 @@ VOL() {
     echo "$volume_text"
 }
 
+LAYOUT() {
+    setxkbmap -query | awk '/layout/ {print $2}'
+}
+
 while true;
 do
     date=`date "+%H:%M:%S %d/%m/%y"`
 
-    xsetroot -name "VOL `VOL` | DATE $date"
-    sleep 0.4
+    xsetroot -name "$(LAYOUT) | VOL $(VOL) | DATE $date"
+    sleep 0.5
 done
