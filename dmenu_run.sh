@@ -4,7 +4,7 @@
 cache_file=~/media/script_data/program_launcher
 all_programs="$(ls /usr/bin)\n$(ls /usr/local/bin)"
 if [ -f "$cache_file" ]; then
-    cached_programs="$(sort -k 2 -r "$cache_file" | cut -d ' ' -f1)"
+    cached_programs="$(sort -n -t' ' -k2 -r "$cache_file" | cut -d ' ' -f1)"
     for program in $all_programs; do
         is_program_cached=false
         for cached_program in $cached_programs; do
