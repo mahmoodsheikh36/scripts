@@ -17,7 +17,7 @@ if [ ! -f "$lyrics_file" ]; then
     if [ "$lyrics" = "" ]; then
         notify-send "couldn't find lyrics for '$song'"
     else
-        echo -ne "$lyrics" > "$lyrics_file"
+        echo "$lyrics" > "$lyrics_file"
         if [ $should_open_lyrics_file -eq 1 ]; then
             notify-send "opened lyrics buffer"
             st -e zsh -i -c "vim \"$lyrics_file\""
