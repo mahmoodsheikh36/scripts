@@ -7,4 +7,4 @@ if [ -z "$1" ]; then
 fi
 
 find "$dir_to_view" -exec file --mime {} \; > /tmp/image_cache
-awk '/image/{print $1}' /tmp/image_cache | rev | cut -c2- | rev | xargs -d '\n' sxiv 
+grep 'image/[a-z]\+;' /tmp/image_cache | cut -d ':' -f1 | xargs -d '\n' sxiv

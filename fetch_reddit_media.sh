@@ -8,6 +8,8 @@ get_date() {
     date "+%H:%M:%S %d/%m/%y"
 }
 
+should_fetch_top_posts=true
+
 subreddits_file="$HOME/workspace/scripts/subreddits.txt"
 download_dir=$HOME/media/reddit
 log_file="$HOME/media/script_data/fetch_reddit_media_logs/log_$(get_date | tr "/" "_")"
@@ -24,6 +26,8 @@ fi
 if [ ! -z "$4" ]; then
     cache_file="$4"
 fi
+
+ln -sf $log_file $HOME/.cache/fetch_reddit_media_log
 
 if [ ! -f $cache_file ]; then
     touch $cache_file
@@ -50,15 +54,19 @@ for subreddit in $(get_subreddits); do
     echo $(get_date) "downloading from $subreddit" >> "$log_file"
     subreddit_name=$(echo $subreddit | cut -d '/' -f3)
     subreddit_dir=$download_dir/$subreddit_name/
-    if [ ! -d $subreddit_dir ]; then
-        mkdir -p $subreddit_dir
-    fi
     cd $subreddit_dir
-    subreddit_url=$(echo $subreddit | awk '{print "https://www.reddit.com" $0 ".rss"}')
-    for file_url in $(fetch_urls $subreddit_url); do
+    subreddit_url=$(echo $subreddit | awk '{print "https://www.reddit.com" $0 ".rss?limit=100"}')
+    file_urls=$(fetch_urls $subreddit_url)
+    if $should_fetch_top_posts; then
+        file_urls="$file_urls $(fetch_urls $(echo $subreddit | awk '{print "https://www.reddit.com" $0 "/top.rss?t=all&limit=100"}'))"
+    fi
+    for file_url in $file_urls; do
         if [ -z "$(grep "$file_url" "$cache_file")" ]; then
             case "$file_url" in
                 *.jpg|*.png|*.gif)
+                    if [ ! -d $subreddit_dir ]; then
+                        mkdir -p $subreddit_dir
+                    fi
                     curl -O "$file_url" 2>/dev/null
                     if [ $(echo $?) = 0 ]; then
                         echo $(get_date) downloaded image $file_url >> "$log_file"
@@ -69,6 +77,9 @@ for subreddit in $(get_subreddits); do
                     fi
                     ;;
                 *gfycat*)
+                    if [ ! -d $subreddit_dir ]; then
+                        mkdir -p $subreddit_dir
+                    fi
                     youtube-dl "$file_url" >/dev/null
                     if [ $(echo $?) = 0 ]; then
                         echo $(get_date) downloaded video $file_url >> "$log_file"
