@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/sh
 # dmenu_run.sh - dmenu launcher with history
 
 cache_file=~/media/script_data/program_launcher
@@ -20,6 +20,7 @@ if [ -f "$cache_file" ]; then
 else
     sorted_programs="$all_programs"
 fi
+echo "$sorted_programs"
 program=$(echo "$sorted_programs" | dmenu -r -i -p "program")
 
 if [ -z "$program" ]; then exit; fi

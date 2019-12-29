@@ -19,6 +19,10 @@ VOL() {
     echo "$volume_text"
 }
 
+BATTERY() {
+    acpi | awk '{print toupper($3), $4, $5, $6, $7}' | sed 's/,//; s/ \+$//'
+}
+
 LAYOUT() {
     setxkbmap -query | awk '/layout/ {print $2}'
 }
@@ -27,6 +31,6 @@ while true;
 do
     date=`date "+%H:%M:%S %d/%m/%y"`
 
-    xsetroot -name "$(LAYOUT) | VOL $(VOL) | DATE $date"
+    xsetroot -name "$(LAYOUT) | $(BATTERY) | VOL $(VOL) | DATE $date"
     sleep 0.5
 done
