@@ -18,6 +18,7 @@ get_date() {
 }
 
 curl -s "$user_url" | grep -o '<meta property="og:[a-z]\+" content=".*/>' > /tmp/new_data
+curl -s "$user_url" | grep -o 'graphql":.*,"edge_saved_media' >> /tmp/new_data
 
 save_new_data() {
     date="$(get_date)"
