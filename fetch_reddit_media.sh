@@ -46,7 +46,7 @@ get_subreddits() {
 
 fetch_urls() {
     subreddit_url="$1"
-    curl "$subreddit_url" -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0" 2>/dev/null | grep -o "\(https\|http\)://\(i\.\|\|external-preview\.\)\(gfycat\|redd\|imgur\)\.\(it\|com\)/[a-zA-Z0-9_]*\(\.\(gif\|jpg\|png\)\|\)"
+    curl -s "$subreddit_url" -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0" | grep -o "\(https\|http\)://\(i\.\|\|external-preview\.\)\(gfycat\|redd\|imgur\)\.\(it\|com\)/[a-zA-Z0-9_]*\(\.\(gif\|jpg\|png\)\|\)"
 }
 
 images_downloaded=0

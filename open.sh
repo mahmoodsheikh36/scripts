@@ -15,6 +15,9 @@ log_no_line_feed() {
 
 file_path() {
     case "$1" in
+        ./*)
+            echo "$PWD$(echo $1 | cut -c2-)"
+            ;;
         */*)
             echo "$1"
             ;;
