@@ -1,5 +1,6 @@
 #!/bin/sh
 
+socks5_proxy="125.227.69.217:1002"
 user_url="$1"
 if [ -z "$user_url" ]; then
     echo please enter user url as first argument
@@ -17,8 +18,17 @@ get_date() {
     date "+%H:%M:%S %d_%m_%y"
 }
 
-curl -s "$user_url" | grep -o '<meta property="og:[a-z]\+" content=".*/>' > /tmp/new_data
-curl -s "$user_url" | grep -o 'graphql":.*,"edge_saved_media' >> /tmp/new_data
+get_user_agent() {
+    shuf -n1 ~/workspace/scripts/user-agents.txt
+}
+
+get_user_page_content() {
+    curl -H "user-agent: $(get_user_agent)" -s --socks5-hostname "$socks5_proxy" "$user_url"
+}
+
+page_content="$(get_user_page_content)"
+echo "$page_content" | grep -o '<meta property="og:[a-z]\+" content=".*/>' > /tmp/new_data
+echo "$page_content" | grep -o 'graphql":.*,"edge_saved_media' >> /tmp/new_data
 
 save_new_data() {
     date="$(get_date)"
