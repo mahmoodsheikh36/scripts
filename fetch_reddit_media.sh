@@ -9,7 +9,7 @@ get_date() {
 }
 
 should_fetch_top_posts=false
-should_fetch_videos=true
+should_fetch_videos=false
 
 subreddits_file="$HOME/workspace/scripts/subreddits.txt"
 download_dir=$HOME/media/reddit
@@ -41,12 +41,12 @@ echo $(get_date) logging to "$log_file"
 echo START $(get_date) >> "$log_file"
 
 get_subreddits() {
-    grep "^/r/" "$subreddits_file" | sort -u 
+    grep "^/r/" "$subreddits_file" | sort -u
 }
 
 fetch_urls() {
     subreddit_url="$1"
-    curl -s "$subreddit_url" -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0" | grep -o "\(https\|http\)://\(i\.\|\|external-preview\.\)\(gfycat\|redd\|imgur\)\.\(it\|com\)/[a-zA-Z0-9_]*\(\.\(gif\|jpg\|png\)\|\)"
+    curl -s "$subreddit_url" -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0" | grep -o "\(https\|http\)://\([a-z-]\+\.\|\)\(gfycat\|redd\|imgur\)\.\(it\|com\)/[a-zA-Z0-9_-]*\(\.\(gif\|jpg\|png\)\|\)"
 }
 
 images_downloaded=0

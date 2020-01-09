@@ -65,6 +65,14 @@ for arg in "$@"; do
                 trap "exit" 2
                 log " video closed $(get_date)"
                 ;;
+            audio/*)
+                log_no_line_feed "$file is an audio"
+                log_no_line_feed " opening audio $(get_date)"
+                trap "log SIGINT received audio closed $(get_date) && exit 1" 2
+                mpv "$file" --keep-open
+                trap "exit" 2
+                log " audio closed $(get_date)"
+                ;;
             text/*)
                 log_no_line_feed "$file is a text file"
                 log_no_line_feed " opening file $(get_date)"
