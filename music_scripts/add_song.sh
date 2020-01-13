@@ -24,26 +24,43 @@ if [ ! -d "$music_library" ]; then
     mkdir "$music_library"
     echo created music library directory
 fi
-
-ffmpeg_output=$(ffmpeg -i "$audio_file_path" 2>&1)
-artist=$(echo "$ffmpeg_output" | grep -m1 'artist' | tr -s ' ' | cut -d ' ' -f4-)
-name=$(echo "$ffmpeg_output" | grep -m1 'title' | tr -s ' ' | cut -d ' ' -f4-)
-album=$(echo "$ffmpeg_output" | grep -m1 'album' | tr -s ' ' | cut -d ' ' -f4-)
-lyrics=$(echo "$ffmpeg_output" | sed -n '/^\s*:.*/p' | tr -s ' ' | cut -d ' ' -f3- | less)
-
 if [ ! -d "$music_library/audio" ]; then
     mkdir "$music_library/audio"
     echo created audio directory
+fi
+if [ ! -d "$music_library/image" ]; then
+    mkdir "$music_library/image"
+    echo created image directory
 fi
 if [ ! -f "$music_library/data.sqlite" ]; then
     sqlite3 "$music_library/data.sqlite" "$(cat init_db.sql)"
     echo created sqlite database
 fi
 
-audio_file_name="$(echo "$audio_file_path" | rev | cut -d '/' -f1 | rev)"
-mv "$audio_file_path" "$music_library/audio/"
-new_file_path="$music_library/audio/$audio_file_name"
+ffmpeg_output=$(ffmpeg -i "$audio_file_path" 2>&1)
+artist=$(echo "$ffmpeg_output" | grep -m1 'artist' | tr -s ' ' | cut -d ' ' -f4- | sed 's/"/\"\"/g')
+name=$(echo "$ffmpeg_output" | grep -m1 'title' | tr -s ' ' | cut -d ' ' -f4- | sed 's/"/\"\"/g')
+album=$(echo "$ffmpeg_output" | grep -m1 'album' | tr -s ' ' | cut -d ' ' -f4- | sed 's/"/\"\"/g')
+lyrics=$(echo "$ffmpeg_output" | sed -n '/^\s*:.*/p' | tr -s ' ' | cut -d ' ' -f3- | sed 's/"/\"\"/g')
 
-sqlite3 "$music_library/data.sqlite" "insert into songs (name, artist, file_path) VALUES(\"$(echo "$name" | sed 's/"/\"\"/g')\", \"$artist\", \"$new_file_path\")"
+audio_file_name="$(echo "$audio_file_path" | rev | cut -d '/' -f1 | rev)"
+image_file_path="$music_library/image/$(echo "$audio_file_name" | sed 's/\.[a-z0-9]\+$/.png/')"
+2>/dev/null 1>/dev/null ffmpeg -i "$audio_file_path" -c:a copy "$image_file_path"
+
+if [ -z "$lyrics" ]; then
+    lyrics="NULL";
+else
+    lyrics="$(echo "$lyrics" | sed 's/"/\"\"/g')"
+fi
+if [ ! -f "$image_file_path" ]; then
+    image_file_path="NULL"
+else
+    image_file_path="$library_path$(echo "$image_file_path" | sed 's/"/\"\"/g')"
+fi
+
+cp "$audio_file_path" "$music_library/audio/"
+new_audio_file_path="$music_library/audio/$audio_file_name"
+
+sqlite3 "$music_library/data.sqlite" "insert into songs (album, name, artist, audio_file_path, image_file_path, lyrics) VALUES(\"$album\", \"$name\", \"$artist\", \"$new_audio_file_path\", \"$image_file_path\", \"$lyrics\")"
 
 echo added song \"$name\" by \"$artist\" to library

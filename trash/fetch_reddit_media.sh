@@ -9,7 +9,7 @@ get_date() {
 }
 
 should_fetch_top_posts=false
-should_fetch_videos=false
+should_fetch_videos=true
 
 subreddits_file="$HOME/workspace/scripts/subreddits.txt"
 download_dir=$HOME/media/reddit
