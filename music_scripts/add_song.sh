@@ -47,6 +47,11 @@ audio_file_name="$(echo "$audio_file_path" | rev | cut -d '/' -f1 | rev)"
 image_file_path="$music_library/image/$(echo "$audio_file_name" | sed 's/\.[a-z0-9]\+$/.png/')"
 2>/dev/null 1>/dev/null ffmpeg -i "$audio_file_path" -c:a copy "$image_file_path"
 
+time="$(echo "$ffmpeg_output" | grep Duration | cut -d ' ' -f4 | tr -d ',')"
+minutes="$(echo "$time" | cut -d ':' -f2)"
+seconds="$(echo "$time" | cut -d ':' -f3 | cut -d '.' -f1)"
+duration=$(expr $minutes \* 60 + $seconds)
+
 if [ -z "$lyrics" ]; then
     lyrics="NULL";
 else
@@ -61,6 +66,6 @@ fi
 cp "$audio_file_path" "$music_library/audio/"
 new_audio_file_path="$music_library/audio/$audio_file_name"
 
-sqlite3 "$music_library/data.sqlite" "insert into songs (album, name, artist, audio_file_path, image_file_path, lyrics) VALUES(\"$album\", \"$name\", \"$artist\", \"$new_audio_file_path\", \"$image_file_path\", \"$lyrics\")"
+sqlite3 "$music_library/data.sqlite" "insert into songs (album, name, artist, audio_file_path, image_file_path, lyrics, duration) VALUES(\"$album\", \"$name\", \"$artist\", \"$new_audio_file_path\", \"$image_file_path\", \"$lyrics\", $duration)"
 
 echo added song \"$name\" by \"$artist\" to library
