@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS songs (
     date_of_entry DATETIME DEFAULT CURRENT_TIMESTAMP,
     audio_file_path TEXT NOT NULL,
     image_file_path TEXT,
-    lyrics TEXT
+    lyrics TEXT,
+    duration int
 );
