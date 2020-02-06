@@ -6,7 +6,8 @@ if [ -z "$1" ]; then
 fi
 
 audio_file_path="$1"
-music_library=$(jq --raw-output .library_path config.json)
+music_library=/home/mahmooz/media/music
+
 
 if [ ! -f "$audio_file_path" ]; then
     echo first argument is not a path to a file
@@ -33,7 +34,7 @@ if [ ! -d "$music_library/image" ]; then
     echo created image directory
 fi
 if [ ! -f "$music_library/data.sqlite" ]; then
-    sqlite3 "$music_library/data.sqlite" "$(cat init_db.sql)"
+    sqlite3 "$music_library/data.sqlite" "$(cat init_music_db.sql)"
     echo created sqlite database
 fi
 

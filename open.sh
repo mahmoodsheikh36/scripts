@@ -91,9 +91,11 @@ for arg in "$@"; do
                 ;;
             *)
                 log "couldnt open $file $(get_date)"
+                exit 1
                 ;;
         esac
     else
         log "$arg is not a file $(get_date)"
+        exit 1
     fi
 done

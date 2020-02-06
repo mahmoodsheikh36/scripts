@@ -28,6 +28,7 @@ def get_audio_files_and_spotify_ids():
         if len(spotify_id.strip()):
             spotify_ids.append(spotify_id.decode().strip())
             audio_files.append(file_path)
+            print(spotify_id.decode().strip(), file_path)
 
     return audio_files, spotify_ids
 
@@ -48,7 +49,7 @@ if __name__ == '__main__':
         for page in library:
             for item in page['items']:
                 if item['track']['id'] == spotify_id:
-                    date = datetime.datetime.fromisoformat(item['added_at'])
+                    date = datetime.datetime.fromisoformat(item['added_at'].replace('Z', '').replace('T', ' '))
                     update_date_of_entry(db_connection, audio_file, date)
 
     db_connection.commit()
