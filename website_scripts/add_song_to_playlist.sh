@@ -13,7 +13,7 @@ if [ -z "$playlist_id" ]; then
     exit 1
 fi
 
-BACKEND="localhost/music/add_song_to_playlist"
+BACKEND="10.0.0.55/music/add_song_to_playlist"
 
 curl "$BACKEND?playlist_id=$playlist_id&song_id=$song_id" \
     -F username=mahmooz -F password=mahmooz

@@ -5,9 +5,14 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+if [ -z "$2" ]; then
+    echo enter artist ids seperated by comma as last argument, example: '5,1,10'
+    exit 1
+fi
+
 audio_file_path="$1"
-image_file_path="$2"
-#backend="https://mahmoodsheikh.com/music/add_song"
+image_file_path="$3"
+artist_ids="$2"
 backend="10.0.0.55/music/add_single_song"
 
 if [ ! -f "$audio_file_path" ]; then
@@ -25,14 +30,13 @@ fi
 ffmpeg_output=$(ffmpeg -i "$audio_file_path" 2>&1)
 artist=$(echo "$ffmpeg_output" | grep -m1 '\sartist' | tr -s ' ' | cut -d ' ' -f4-)
 name=$(echo "$ffmpeg_output" | grep -m1 'title' | tr -s ' ' | cut -d ' ' -f4-)
-lyrics=$(echo "$ffmpeg_output" | sed -n '/^\s*:.*/p' | tr -s ' ' | cut -d ' ' -f3- | sed 's/;/%3B/g')
 
 time="$(echo "$ffmpeg_output" | grep Duration | cut -d ' ' -f4 | tr -d ',')"
 minutes="$(echo "$time" | cut -d ':' -f2)"
 seconds="$(echo "$time" | cut -d ':' -f3 | cut -d '.' -f1)"
 duration=$(expr $minutes \* 60 + $seconds)
 
-echo "\n"trying to add song \'$name\' by \'$artist\'....
+bitrate="$(mediainfo "$audio_file_path" | grep 'Bit rate\s*:' | tr -s ' ' | cut -d ' ' -f4)"
 
 if [ -z "$image_file_path" ] ; then
     if [ -f /tmp/image.png ]; then
@@ -46,8 +50,10 @@ if [ -z "$image_file_path" ] ; then
     image_file_path=/tmp/image.png
 fi
 
-if [ -z "$lyrics" ]; then
-    curl -X POST "$backend" --form-string 'username=mahmooz' --form-string 'password=mahmooz' -F "audio=@$audio_file_path" --form-string duration=$duration --form-string artist="$artist" --form-string name="$name" -F "image_file_name=$image_file_path" -F "audio_file_name=$audio_file_path" -F "image=@$image_file_path"
-else
-    curl -X POST "$backend" --form-string 'username=mahmooz' --form-string 'password=mahmooz' -F "audio=@$audio_file_path" --form-string duration=$duration --form-string artist="$artist" --form-string name="$name" -F "image_file_name=$image_file_path" -F "audio_file_name=$audio_file_path" -F "image=@$image_file_path" --form-string "lyrics=$lyrics"
-fi
+urlencode () {
+    python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.stdin.read()))"
+}
+
+curl -s -X POST "$backend?artist_ids=$artist_ids&name=$(echo -n "$name" | urlencode)&bitrate=$bitrate&duration=$duration" \
+    -F "audio=@$audio_file_path" -F "image=@$image_file_path" \
+    -F username=mahmooz -F password=mahmooz | jq

@@ -7,7 +7,7 @@ album_artist=$(echo "$ffmpeg_output" | grep -i -m1 '\salbum_artist\s' | tr -s ' 
 name=$(echo "$ffmpeg_output" | grep -i -m1 '\stitle\s' | tr -s ' ' | cut -d ' ' -f4-)
 album=$(echo "$ffmpeg_output" | grep -i -m1 '\salbum\s' | tr -s ' ' | cut -d ' ' -f4-)
 lyrics=$(echo "$ffmpeg_output" | sed -n '/^\s*:.*/p' | tr -s ' ' | cut -d ' ' -f3- | sed 's/;/%3B/g')
-bitrate=$(echo "$ffmpeg_output" | awk '/Stream #0:0/ {print $(NF-1), $NF}')
+bitrate=$(echo "$ffmpeg_output" | awk '/^\s*Duration/ {print $(NF-1), $NF}')
 
 time="$(echo "$ffmpeg_output" | grep Duration | cut -d ' ' -f4 | tr -d ',')"
 minutes="$(echo "$time" | cut -d ':' -f2)"

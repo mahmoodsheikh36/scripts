@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BACKEND="localhost/music/create_playlist"
+BACKEND="10.0.0.55/music/add_playlist"
 
 playlist_name="$1"
 image_file_path="$2"
