@@ -33,9 +33,6 @@ urlencode () {
     python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.stdin.read()))"
 }
 
-curl -X POST "$BACKEND?album_name=$(echo -n "$album_name" | urlencode)&artist_id=$artist_id" \
-    -F "image=@$image_file_path" -F 'username=mahmooz' -F 'password=mahmooz' | jq
-
 if [ ! -z "$cue_file_path" ]; then
     if [ ! -z "$log_file_path" ]; then
         curl -X POST "$BACKEND?album_name=$(echo -n "$album_name" | urlencode)&artist_id=$artist_id&year=$year" \
