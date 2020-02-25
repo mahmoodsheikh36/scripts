@@ -60,12 +60,11 @@ for track in tracks:
 
     cmd = '< /dev/null ffmpeg'
     cmd += ' -i "%s"' % current_file
-    cmd += ' -b:a 320k'
     cmd += ' -ss %.2d:%.2d:%.2d' % (track['start'] / 60 / 60, track['start'] / 60 % 60, int(track['start'] % 60))
 
     if 'duration' in track:
         cmd += ' -t %.2d:%.2d:%.2d' % (track['duration'] / 60 / 60, track['duration'] / 60 % 60, int(track['duration'] % 60))
 
-    cmd += ' "%.2d - %s - %s.mp3"' % (track['track'], track['artist'], track['title'])
+    cmd += ' "%.2d - %s - %s.flac"' % (track['track'], track['artist'], track['title'])
 
     print(cmd)
