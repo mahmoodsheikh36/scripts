@@ -24,6 +24,7 @@ audio_file_path="$1"
 album_id="$2"
 index_in_album="$3"
 artist_ids="$4"
+name="$5"
 backend="10.0.0.55/music/add_song_to_album"
 
 if [ ! -f "$audio_file_path" ]; then
@@ -40,7 +41,9 @@ fi
 
 ffmpeg_output=$(ffmpeg -i "$audio_file_path" 2>&1)
 artist=$(echo "$ffmpeg_output" | grep -m1 '\sartist' | tr -s ' ' | cut -d ' ' -f4-)
-name=$(echo "$ffmpeg_output" | grep -m1 'title' | tr -s ' ' | cut -d ' ' -f4-)
+if [ -z "$name" ]; then
+    name=$(echo "$ffmpeg_output" | grep -m1 -i 'title' | tr -s ' ' | cut -d ' ' -f4-)
+fi
 
 time="$(echo "$ffmpeg_output" | grep Duration | cut -d ' ' -f4 | tr -d ',')"
 minutes="$(echo "$time" | cut -d ':' -f2)"
@@ -54,4 +57,4 @@ urlencode () {
 }
 
 curl -s -X POST "$backend?index_in_album=$index_in_album&album_id=$album_id&name=$(echo -n "$name" | urlencode)&bitrate=$bitrate&duration=$duration&artist_ids=$artist_ids" \
-    -F 'username=mahmooz' -F 'password=mahmooz' -F "audio=@$audio_file_path" | jq
+    -F 'username=mahmooz' -F 'password=mahmooz' -F "audio=@\"$audio_file_path\"" | jq
