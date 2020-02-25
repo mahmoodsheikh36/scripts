@@ -10,9 +10,15 @@ if [ -z "$2" ]; then
     exit 1
 fi
 
+if [ -z "$3" ]; then
+    echo enter year as third argument
+    exit 1
+fi
+
 audio_file_path="$1"
-image_file_path="$3"
+image_file_path="$4"
 artist_ids="$2"
+year="$3"
 backend="10.0.0.55/music/add_single_song"
 
 if [ ! -f "$audio_file_path" ]; then
@@ -54,6 +60,6 @@ urlencode () {
     python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.stdin.read()))"
 }
 
-curl -s -X POST "$backend?artist_ids=$artist_ids&name=$(echo -n "$name" | urlencode)&bitrate=$bitrate&duration=$duration" \
+curl -s -X POST "$backend?artist_ids=$artist_ids&name=$(echo -n "$name" | urlencode)&bitrate=$bitrate&duration=$duration&year=$year" \
     -F "audio=@$audio_file_path" -F "image=@$image_file_path" \
     -F username=mahmooz -F password=mahmooz | jq
