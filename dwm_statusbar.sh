@@ -27,10 +27,14 @@ LAYOUT() {
     setxkbmap -query | awk '/layout/ {print $2}'
 }
 
+AVAILABLE_STORAGE() {
+    df -h | grep '/$' | tr -s ' ' | cut -d ' ' -f4
+}
+
 while true;
 do
     date=`date "+%H:%M:%S %d/%m/%y"`
 
-    xsetroot -name "$(LAYOUT) | $(BATTERY) | VOL $(VOL) | DATE $date"
+    xsetroot -name "$(LAYOUT) | AVAIL STORAGE $(AVAILABLE_STORAGE) | $(BATTERY) | VOL $(VOL) | DATE $date"
     sleep 0.5
 done
