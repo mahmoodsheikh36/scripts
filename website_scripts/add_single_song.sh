@@ -35,7 +35,7 @@ fi
 
 ffmpeg_output=$(ffmpeg -i "$audio_file_path" 2>&1)
 artist=$(echo "$ffmpeg_output" | grep -m1 '\sartist' | tr -s ' ' | cut -d ' ' -f4-)
-name=$(echo "$ffmpeg_output" | grep -m1 'title' | tr -s ' ' | cut -d ' ' -f4-)
+name=$(echo "$ffmpeg_output" | grep -m1 -i 'title' | tr -s ' ' | cut -d ' ' -f4-)
 
 time="$(echo "$ffmpeg_output" | grep Duration | cut -d ' ' -f4 | tr -d ',')"
 minutes="$(echo "$time" | cut -d ':' -f2)"
