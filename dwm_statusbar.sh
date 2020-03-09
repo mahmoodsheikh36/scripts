@@ -3,8 +3,8 @@
 
 VOL() {
     size=10
-    volume=`pactl list sinks | awk '/^\s*Volume/{print $5}'`
-    percentage=`echo $volume | tr -d "%"`
+    volume=$(pactl list sinks | awk '/^\s*Volume/{print $5}')
+    percentage=$(echo $volume | tr -d "%")
     i=1
     volume_text="["
     while [ ! $i -gt $size ]; do
@@ -28,7 +28,7 @@ LAYOUT() {
 }
 
 STORAGE() {
-    df -h | awk '/\/$/ {print $4 " / " $2}'
+    df -h | awk '/\/$/ {print $3 " / " $2}'
 }
 
 MEM() {
@@ -37,7 +37,7 @@ MEM() {
 
 while true;
 do
-    date=`date "+%H:%M:%S %d/%m/%y"`
+    date=$(date "+%H:%M:%S %d/%m/%y")
 
     xsetroot -name "$(LAYOUT) | MEM $(MEM) | STORAGE $(STORAGE) | $(BATTERY) | VOL $(VOL) | DATE $date"
     sleep 0.5
