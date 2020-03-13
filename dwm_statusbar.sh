@@ -19,6 +19,7 @@ VOL() {
     echo "$volume_text"
 }
 
+# acpi is slow, takes like 1.5 seconds to finish :/
 BATTERY() {
     acpi | awk '{print toupper($3), $4, $5, $6, $7}' | sed 's/,//; s/ \+$//'
 }
@@ -35,10 +36,5 @@ MEM() {
     free -h | awk '/Mem/ {print $3 " / " $2}'
 }
 
-while true;
-do
-    date=$(date "+%H:%M:%S %d/%m/%y")
-
-    xsetroot -name "$(LAYOUT) | MEM $(MEM) | STORAGE $(STORAGE) | $(BATTERY) | VOL $(VOL) | DATE $date"
-    sleep 0.5
-done
+date=$(date "+%H:%M:%S %d/%m/%y")
+echo "$(LAYOUT) | MEM $(MEM) | STORAGE $(STORAGE) | VOL $(VOL) | DATE $date"
