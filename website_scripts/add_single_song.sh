@@ -19,7 +19,7 @@ audio_file_path="$1"
 image_file_path="$4"
 artist_ids="$2"
 year="$3"
-backend="10.0.0.55/music/add_single_song"
+backend="10.0.0.54/music/add_single_song"
 
 if [ ! -f "$audio_file_path" ]; then
     echo first argument \'"$1"\' is not a path to a file
@@ -33,17 +33,6 @@ if ! $audio_mimetype; then
     exit 1
 fi
 
-ffmpeg_output=$(ffmpeg -i "$audio_file_path" 2>&1)
-artist=$(echo "$ffmpeg_output" | grep -m1 '\sartist' | tr -s ' ' | cut -d ' ' -f4-)
-name=$(echo "$ffmpeg_output" | grep -m1 -i 'title' | tr -s ' ' | cut -d ' ' -f4-)
-
-time="$(echo "$ffmpeg_output" | grep Duration | cut -d ' ' -f4 | tr -d ',')"
-minutes="$(echo "$time" | cut -d ':' -f2)"
-seconds="$(echo "$time" | cut -d ':' -f3 | cut -d '.' -f1)"
-duration=$(expr $minutes \* 60 + $seconds)
-
-bitrate="$(mediainfo "$audio_file_path" | grep 'Bit rate\s*:' | tr -s ' ' | cut -d ' ' -f4)"
-
 if [ -z "$image_file_path" ] ; then
     if [ -f /tmp/image.png ]; then
         rm /tmp/image.png
@@ -56,10 +45,13 @@ if [ -z "$image_file_path" ] ; then
     image_file_path=/tmp/image.png
 fi
 
+ffmpeg_output=$(ffmpeg -i "$audio_file_path" 2>&1)
+name=$(echo "$ffmpeg_output" | grep -m1 -i 'title' | tr -s ' ' | cut -d ' ' -f4-)
+
 urlencode () {
     python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.stdin.read()))"
 }
 
-curl -s -X POST "$backend?artist_ids=$artist_ids&name=$(echo -n "$name" | urlencode)&bitrate=$bitrate&duration=$duration&year=$year" \
+curl -s -X POST "$backend?artist_ids=$artist_ids&name=$(echo -n "$name" | urlencode)&year=$year" \
     -F "audio=@$audio_file_path" -F "image=@$image_file_path" \
     -F username=mahmooz -F password=mahmooz | jq
