@@ -25,7 +25,7 @@ album_id="$2"
 index_in_album="$3"
 artist_ids="$4"
 name="$5"
-backend="10.0.0.55/music/add_song_to_album"
+backend="10.0.0.54/music/add_song_to_album"
 
 if [ ! -f "$audio_file_path" ]; then
     echo first argument \'"$1"\' is not a path to a file
