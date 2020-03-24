@@ -77,7 +77,6 @@ def get_last_post_name():
                                  DESC LIMIT 1').fetchone()
     if last_post is None:
         return None
-    print(last_post)
     return last_post[3]
 
 if __name__ == '__main__':
