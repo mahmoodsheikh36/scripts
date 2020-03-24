@@ -4,6 +4,7 @@
 album_id="$1"
 artist_ids="$2"
 last_file_number="$3"
+format=${4:-mp3}
 
 if [ -z "$album_id" ]; then
     echo enter album id as first argument
@@ -22,7 +23,7 @@ fi
 
 current="01"
 while [ $last_file_number -gt $(expr $current - 1) ]; do
-    add_album_song.sh $current*.mp3 $album_id $current $artist_ids
+    add_album_song.sh $current*.$format $album_id $current $artist_ids
     current_num=$(expr $current + 1)
     if [ $current_num -lt 10 ]; then
         current=0$current_num
