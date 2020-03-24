@@ -4,10 +4,14 @@ import json
 import random
 import sqlite3
 import time
+import sys
 
 current_time = lambda: int(round(time.time() * 1000))
 
-SUBREDDIT = 'prettygirls'
+SUBREDDIT = 'wallpaper'
+if len(sys.argv) > 1:
+    SUBREDDIT = sys.argv[1]
+
 ALLOWED_FILE_EXTENSIONS = ['jpg', 'png', 'jpeg']
 
 from pathlib import Path
