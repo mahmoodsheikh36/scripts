@@ -3,7 +3,7 @@
 
 VOL() {
     size=10
-    volume=$(pactl list sinks | awk '/^\s*Volume/{print $5}')
+    volume=$(amixer get Master | awk '/%/ {print $4}' | tr -d '[]')
     percentage=$(echo $volume | tr -d "%")
     i=1
     volume_text="["
@@ -36,5 +36,9 @@ MEM() {
     free -h | awk '/Mem/ {print $3 " / " $2}'
 }
 
+MUSIC() {
+    music_daemon_cmd.sh current; echo -n ' '; music_daemon_cmd.sh progress
+}
+
 date=$(date "+%H:%M:%S %d/%m/%y")
-echo "$(LAYOUT) | MEM $(MEM) | STORAGE $(STORAGE) | VOL $(VOL) | DATE $date"
+echo "$(LAYOUT) | $(MUSIC) | MEM $(MEM) | STORAGE $(STORAGE) | VOL $(VOL) | DATE $date"
