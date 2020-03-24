@@ -3,6 +3,9 @@ import requests
 import json
 import random
 import sqlite3
+import time
+
+current_time = lambda: int(round(time.time() * 1000))
 
 SUBREDDIT = 'prettygirls'
 ALLOWED_FILE_EXTENSIONS = ['jpg', 'png', 'jpeg']
@@ -24,6 +27,7 @@ db_conn.executescript('''
         permalink TEXT NOT NULL,
         url TEXT NOT NULL,
         num_comments INTEGER NOT NULL,
+        time_added INTEGER NOT NULL,
         filename TEXT NOT NULL
     );
 ''')
@@ -61,15 +65,27 @@ def add_to_db(filename, reddit_post_data):
     db_conn.execute('''
     INSERT INTO images\
     (title, upvotes, post_name, created, author, permalink, url, num_comments,\
-     filename)\
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+     filename, time_added)\
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''',
     (d['title'], d['ups'], d['name'], d['created'], d['author'], d['permalink'],
-     d['url'], d['num_comments'], filename))
+     d['url'], d['num_comments'], filename, current_time()))
     db_conn.commit()
 
+def get_last_post_name():
+    last_post = db_conn.execute('SELECT * FROM images ORDER BY time_added\
+                                 DESC LIMIT 1').fetchone()
+    if last_post is None:
+        return None
+    print(last_post)
+    return last_post[3]
+
 if __name__ == '__main__':
-    after = 't3_6wc2m6'
+    after = get_last_post_name()
+    if after is None:
+        print('running for the first time, here we go!')
+    else:
+        print('picking up where i left off: {}'.format(after))
     try:
         while True:
             data = get_data(after)
