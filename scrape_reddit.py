@@ -66,6 +66,7 @@ def add_to_db(filename, reddit_post_data):
     ''',
     (d['title'], d['ups'], d['name'], d['created'], d['author'], d['permalink'],
      d['url'], d['num_comments'], filename))
+    db_conn.commit()
 
 if __name__ == '__main__':
     after = None
