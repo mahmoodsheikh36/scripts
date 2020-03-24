@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python3
 import requests
 import json
 import random
@@ -51,7 +51,7 @@ def get_data(after):
     return json.loads(response.text)['data']
 
 def download_file(url, local_path):
-    response = requests.get(url, allow_redirects=True,
+    response = requests.get(url, allow_redirects=True, timeout=10,
                             headers={'user-agent': get_user_agent()})
     with open(local_path, 'wb+') as output_file:
         output_file.write(response.content)
@@ -69,7 +69,7 @@ def add_to_db(filename, reddit_post_data):
     db_conn.commit()
 
 if __name__ == '__main__':
-    after = None
+    after = 't3_6wc2m6'
     try:
         while True:
             data = get_data(after)
@@ -80,11 +80,15 @@ if __name__ == '__main__':
                     if post_data['url'].endswith('.{}'.format(allowed_extension)):
                         download_this_post = True
                 if not download_this_post:
+                    print('skipping image for {}'.format(post_data['title']))
                     continue
                 print('downloading image of {}'.format(post_data['title']))
                 filename = post_data['name']
-                download_file(post_data['url'], save_dir + filename)
-                add_to_db(filename, post_data)
+                try:
+                    download_file(post_data['url'], save_dir + filename)
+                    add_to_db(filename, post_data)
+                except requests.exceptions.Timeout as e:
+                    print('timeout, skipping {}'.format(post_data['title']))
             after = data['after']
     except KeyboardInterrupt:
         print('quit')
