@@ -9,14 +9,17 @@ import sys
 current_time = lambda: int(round(time.time() * 1000))
 
 SUBREDDIT = 'wallpaper'
-if len(sys.argv) > 1:
-    SUBREDDIT = sys.argv[1]
-
-ALLOWED_FILE_EXTENSIONS = ['jpg', 'png', 'jpeg']
 
 from pathlib import Path
 save_dir = str(Path.home()) + '/{}/'.format(SUBREDDIT)
-Path(save_dir).mkdir(exist_ok=True)
+
+if len(sys.argv) > 1:
+    SUBREDDIT = sys.argv[1]
+if len(sys.argv) > 2:
+    save_dir = sys.argv[2] + '/{}/'.format(SUBREDDIT)
+Path(save_dir).mkdir(exist_ok=True, parents=True)
+
+ALLOWED_FILE_EXTENSIONS = ['jpg', 'png', 'jpeg']
 
 db_conn = sqlite3.connect(save_dir + 'data.sqlite')
 
