@@ -106,7 +106,7 @@ if __name__ == '__main__':
                 try:
                     download_file(post_data['url'], save_dir + filename)
                     add_to_db(filename, post_data)
-                except Exception as e:
+                except requests.exceptions.RequestException as e:
                     print('couldnt download {}'.format(post_data['title']))
             after = data['after']
     except KeyboardInterrupt:
