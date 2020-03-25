@@ -15,8 +15,14 @@ metadata_cmd = 'ffprobe -loglevel panic -show_entries format_tags'
 
 AUDIO_FILE_EXTENSIONS = ['mp3', 'flac']
 
-tags_to_print = sys.argv[1:]
-if not tags_to_print:
+if len(sys.argv) > 1:
+    music_dir = sys.argv[1]
+else:
+    print('you didnt specify a directory')
+    sys.exit(1)
+if len(sys.argv) > 2:
+    tags_to_print = [tag.strip() for tag in sys.argv[2].split(',')]
+else:
     tags_to_print = ['title', 'artist', 'album']
 
 def get_tags(filepath):
@@ -40,10 +46,10 @@ def handle_filepath(filepath):
             if i == len(tags_to_print) - 1:
                 txt += tags[tags_to_print[i]]
             else:
-                txt += tags[tags_to_print[i]] + ' - '
+                txt += tags[tags_to_print[i]] + '\t'
         print(txt, flush=True)
     except Exception:
-        print('no title tag', flush=True)
+        print('tags not found', flush=True)
 
 with ThreadPoolExecutor(max_workers=psutil.cpu_count()) as executor:
     for folder, subs, files in os.walk(music_dir):
