@@ -23,9 +23,14 @@ def get_next_id():
 def get_url_for_id(my_id):
     return 'https://redacted.ch/torrents.php?action=download&id={}&authkey=7e74878a537345b82916899a6d6bc6cd&torrent_pass=65f69237a511eaf189f1a29398b3bbb4'.format(my_id)
 
-while True:
-    current_id = get_next_id()
-    r = requests.get(get_url_for_id(current_id), cookies=cookies, headers=headers)
-    with open('{}.torrent'.format(current_id), 'wb+') as torrent_file:
+def download_torrent(torrent_id):
+    r = requests.get(get_url_for_id(torrent_id), cookies=cookies, headers=headers)
+    with open('{}.torrent'.format(torrent_id), 'wb+') as torrent_file:
         torrent_file.write(r.content)
-    print('got torrent {}'.format(current_id))
+
+if __name__ == '__main__':
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        while True:
+            torrent_id = get_next_id()
+            executor.submit(download_torrent, torrent_id)
+            print('got torrent {}'.format(torrent_id))
