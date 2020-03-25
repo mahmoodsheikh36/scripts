@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import requests
-import numpy
 import random
 from concurrent.futures import ThreadPoolExecutor
 
@@ -28,10 +27,10 @@ def download_torrent(torrent_id):
     r = requests.get(get_url_for_id(torrent_id), cookies=cookies, headers=headers)
     with open('{}.torrent'.format(torrent_id), 'wb+') as torrent_file:
         torrent_file.write(r.content)
+    print('got torrent {}'.format(torrent_id))
 
 if __name__ == '__main__':
     with ThreadPoolExecutor(max_workers=3) as executor:
         while True:
             torrent_id = get_next_id()
             executor.submit(download_torrent, torrent_id)
-            print('got torrent {}'.format(torrent_id))
