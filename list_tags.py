@@ -3,7 +3,6 @@ import json
 import pathlib
 import os
 import subprocess
-import threading
 import sys
 import psutil
 from concurrent.futures import ThreadPoolExecutor 
