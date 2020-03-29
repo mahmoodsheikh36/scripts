@@ -39,7 +39,7 @@ MEM() {
 MUSIC() {
     current_song=$(music_daemon_cmd.sh current)
     is_liked=$(music_daemon_cmd.sh is_liked $(echo $current_song | cut -d ' ' -f1))
-    $is_liked && echo "💕 $current_song" || echo "current_song"
+    $is_liked && echo "💕 $current_song" || echo "$current_song"
 }
 
 #MUSIC() {
