@@ -122,6 +122,7 @@ def handle_post(post_data):
         return
     print('downloading image of {}'.format(post_data['title']))
     filename = post_data['name'] + '_{}_{}'.format(post_data['ups'], post_data['title'])
+    filename = filename.replace('/', '_')
     try:
         download_file(post_data['url'], save_dir + filename)
         add_to_db(filename, post_data)
