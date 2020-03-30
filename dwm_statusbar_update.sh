@@ -1,4 +1,4 @@
 #!/bin/sh
 # update dwm's statusbar
 
-xsetroot -name "$(dwm_statusbar.sh)"
+xsetroot -name "$(statusbar.sh)"
