@@ -2,26 +2,12 @@
 # dwm_statusbar.sh - statusbar script
 
 VOL() {
-    size=10
-    volume=$(amixer get Master | awk '/%/ {print $4}' | tr -d '[]')
-    percentage=$(echo $volume | tr -d "%")
-    i=1
-    volume_text="["
-    while [ ! $i -gt $size ]; do
-        if [ $(( percentage + 2 )) -gt $(( ( 100 / $size ) * $i )) ]; then
-            volume_text="${volume_text}#"
-        else
-            volume_text="$volume_text-"
-        fi
-        i=$(( i + 1 ))
-    done
-    volume_text="${volume_text}] ($volume)"
-    echo "$volume_text"
+    amixer get Master | awk '/%/ {print $4}' | tr -d '[]'
 }
 
-# acpi is slow, takes like 1.5 seconds to finish :/
 BATTERY() {
-    acpi | awk '{print toupper($3), $4, $5, $6, $7}' | sed 's/,//; s/ \+$//'
+    cat /sys/class/power_supply/BAT0/capacity | tr -d '\n'
+    echo -n '%'
 }
 
 LAYOUT() {
@@ -38,10 +24,13 @@ MEM() {
 
 MUSIC() {
     current_song=$(music_daemon_cmd.sh current)
+    [ "$current_song" = "" ] && echo NO MUSIC && return
     is_liked=$(music_daemon_cmd.sh is_liked $(echo $current_song | cut -d ' ' -f1))
-    $is_liked && echo -n "💕 $current_song" || echo -n "$current_song"
-    echo -n ' '
+    #echo -n '🤘'
+    $is_liked && echo -n "[LIKED] $current_song" || echo -n "$current_song"
+    echo -n " "
     music_daemon_cmd.sh progress
+    echo -n " [$(music_daemon_cmd.sh mode)]"
 }
 
 #MUSIC() {
@@ -50,6 +39,6 @@ MUSIC() {
 #    echo $song - $artist
 #}
 
-date=$(date "+%H:%M:%S %d/%m/%y")
-#echo "$(LAYOUT) | $(MUSIC) | MEM $(MEM) | STORAGE $(STORAGE) | VOL $(VOL) | DATE $date"
-echo " $(LAYOUT) | $(MUSIC) | VOL $(VOL) | DATE $date"
+date=$(date "+%H:%M:%S (%a) %d/%m/%y")
+#echo "⌨ $(LAYOUT)|$(MUSIC)|🔊 $(VOL)|🕒 $date"
+echo "$(LAYOUT)|$(MUSIC)|VOL $(VOL)|TIME $date"
