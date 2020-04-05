@@ -2,7 +2,7 @@
 # dwm_statusbar.sh - statusbar script
 
 VOL() {
-    amixer get Master | awk '/%/ {print $4}' | tr -d '[]'
+    pactl list sinks | awk '/^\sVolume:/ {print $5}'
 }
 
 BATTERY() {
@@ -26,9 +26,8 @@ MUSIC() {
     current_song=$(music_daemon_cmd.sh current)
     [ "$current_song" = "" ] && echo NO MUSIC && return
     is_liked=$(music_daemon_cmd.sh is_liked $(echo $current_song | cut -d ' ' -f1))
-    echo -n '🤘'
-    [ "$(music_daemon_cmd.sh mode)" = "LOOP_SONG" ] && echo -n '🔁'
-    $is_liked && echo -n "💕 " || echo -n ' '
+    [ "$(music_daemon_cmd.sh mode)" = "LOOP_SONG" ] && echo -n '🔂'
+    $is_liked && echo -n "💕 "
     echo -n "$current_song" | cut -d ' ' -f2- | tr -d '\n'
     echo -n " "
     music_daemon_cmd.sh progress
@@ -41,5 +40,4 @@ MUSIC() {
 #}
 
 date=$(date "+%H:%M:%S (%a) %d/%m/%y")
-#echo "⌨ $(LAYOUT)|$(MUSIC)|🔊 $(VOL)|🕒 $date"
-echo "$(LAYOUT)|$(MUSIC)|🔊 $(VOL)|🕒 $date"
+echo "$(LAYOUT)|🤘$(MUSIC)|🔊 $(VOL)|🕒 $date"
