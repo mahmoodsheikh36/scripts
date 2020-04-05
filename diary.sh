@@ -14,5 +14,5 @@ if [ -f /tmp/diary ]; then
         echo `date "+%H:%M:%S %d/%m/%y" | tr "/" "_"` >> "$diary_file"
         notify-send "saved diary for $date" -t 10000
     fi
-    rm /tmp/diary
+    #rm /tmp/diary
 fi
