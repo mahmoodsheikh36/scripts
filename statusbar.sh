@@ -19,7 +19,7 @@ STORAGE() {
 }
 
 MEM() {
-    free -h | awk '/Mem/ {print $3 " / " $2}'
+    free -h | awk '/Mem/ {print $3 "/" $2}'
 }
 
 MUSIC() {
@@ -27,7 +27,8 @@ MUSIC() {
     [ "$current_song" = "" ] && echo NO MUSIC && return
     is_liked=$(music_daemon_cmd.sh is_liked $(echo $current_song | cut -d ' ' -f1))
     [ "$(music_daemon_cmd.sh mode)" = "LOOP_SONG" ] && echo -n '🔂'
-    $is_liked && echo -n "💕 "
+    $is_liked && echo -n "💕"
+    echo -n '🤘 '
     echo -n "$current_song" | cut -d ' ' -f2- | tr -d '\n'
     echo -n " "
     music_daemon_cmd.sh progress
@@ -40,4 +41,4 @@ MUSIC() {
 #}
 
 date=$(date "+%H:%M:%S (%a) %d/%m/%y")
-echo "$(LAYOUT)|🤘$(MUSIC)|🔊 $(VOL)|🕒 $date"
+echo "$(LAYOUT)|$(MUSIC)|🐏 $(MEM)|🔊 $(VOL)|🕒 $date"
