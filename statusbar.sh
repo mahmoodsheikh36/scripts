@@ -25,12 +25,13 @@ MEM() {
 MUSIC() {
     current_song=$(pmus -r current)
     [ "$current_song" = "" ] && echo NO MUSIC && return
-    is_liked=$(music_daemon_cmd.sh is_liked $(echo $current_song | cut -d ' ' -f1))
-    [ "$(music_daemon_cmd.sh mode)" = "LOOP_SONG" ] && echo -n '🔂'
+    is_liked=$(pmus -r is_liked $(echo $current_song | cut -d ' ' -f1))
+    [ "$(pmus -r mode)" = "LOOP_SONG" ] && echo -n '🔂'
     $is_liked && echo -n "💕"
     echo -n '🤘 '
     echo -n "$current_song" | cut -d ' ' -f2- | tr -d '\n'
-    music_daemon_cmd.sh progress
+    echo -n ' '
+    pmus -r progress
 }
 
 #MUSIC() {
