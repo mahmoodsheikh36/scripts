@@ -25,7 +25,7 @@ MEM() {
 MUSIC() {
     current_song=$(pmus -r current)
     [ "$current_song" = "" ] && echo NO MUSIC && return
-    is_liked=$(pmus -r is_liked $(echo $current_song | cut -d ' ' -f1))
+    is_liked=$(pmus -r "is_liked $(echo $current_song | cut -d ' ' -f1)")
     [ "$(pmus -r mode)" = "LOOP_SONG" ] && echo -n '🔂'
     $is_liked && echo -n "💕"
     echo -n '🤘 '
