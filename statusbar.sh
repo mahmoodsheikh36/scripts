@@ -41,4 +41,4 @@ MUSIC() {
 }
 
 date=$(date "+%H:%M:%S (%a) %d/%m/%y")
-echo "$(LAYOUT)|🤘 $(MUSIC)|🐏 $(MEM)|🔊 $(VOL)|🕒 $date"
+echo "$(LAYOUT)|🤘 $(MUSIC)|💻 $(MEM)|🔊 $(VOL)|🕒 $date"
