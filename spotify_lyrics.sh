@@ -5,5 +5,6 @@ lyrics_file=~/media/lyrics/"$song - $artist"
 [ -f "$lyrics_file" ] && notify-send -t 6000000 "$(cat "$lyrics_file")" || (\
     notify-send -t 5000 "fetching lyrics..";\
     lyrics="$(get_genius_lyrics.py "$song" "$artist")";\
+    [ -z "$lyrics" ] && lyrics="$(clyrics "$song - $artist")";\
     [ ! -z "$lyrics" ] && echo "$lyrics" > "$lyrics_file" &&\
     notify-send -t 6000000 "$lyrics" || notify-send "couldnt get lyrics" )
