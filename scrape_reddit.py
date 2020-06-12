@@ -26,7 +26,15 @@ Path(save_dir).mkdir(exist_ok=True, parents=True)
 
 ALLOWED_FILE_EXTENSIONS = ['jpg', 'png', 'jpeg']
 
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
 db_conn = sqlite3.connect(save_dir + 'data.sqlite')
+db_conn.row_factory = dict_factory
+
 db_conn.executescript('''
     CREATE TABLE IF NOT EXISTS images (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,14 +112,26 @@ def get_last_post_name():
         return None
     return last_post[3]
 
-def post_already_handled(post_name):
-    return db_conn.execute('SELECT id FROM images WHERE\
-                            post_name = ?', (post_name,)).fetchone()\
-                            is not None
+def get_post_from_db(post_name):
+    return db_conn.execute('SELECT * FROM images WHERE post_name = ?',
+                           (post_name,)).fetchone()
+
+def update_upvotes(post_name, upvotes):
+    db_conn.execute('UPDATE images SET upvotes = ? WHERE post_name = ?',
+                    (upvotes, post_name))
+    db_conn.commit()
 
 def handle_post(post_data):
-    if post_already_handled(post_data['name']):
-        print('already handled {}'.format(post_data['title']))
+    db_post = get_post_from_db(post_data['name'])
+    if db_post is not None:
+        old_upvotes = db_post['upvotes']
+        new_upvotes = post_data['ups']
+        if old_upvotes != new_upvotes:
+            print('updating upvotes from {} to {} for {}'.format(old_upvotes,
+                    new_upvotes, post_data['title']))
+            update_upvotes(post_data['name'], new_upvotes)
+        else:
+            print('already handled {}'.format(post_data['title']))
         return
     download_this_post = False
     for allowed_extension in ALLOWED_FILE_EXTENSIONS:
