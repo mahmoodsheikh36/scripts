@@ -2,7 +2,7 @@
 # dwm_statusbar.sh - statusbar script
 
 VOL() {
-    pactl list sinks | awk '/^\sVolume:/ {print $5}'
+    amixer get Master | awk 'END {print $4}' | tr -d '[]'
 }
 
 BATTERY() {
@@ -39,6 +39,8 @@ MUSIC() {
     artist=$(dbus-send --print-reply --session --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata' | grep ':artist' -A2 | tail -1 | tr -s ' ' | cut -d ' ' -f3- | sed 's/^"//; s/"$//')
     echo $song - $artist
 }
+
+#status=$(python -c 'import json; f = open("whatsapp.json"); data = json.loads(f.read()); print(data[-1]["new_status"]); f.close()')
 
 date=$(date "+%H:%M:%S (%a) %d/%m/%y")
 echo "$(LAYOUT)|🤘 $(MUSIC)|💻 $(MEM)|🔊 $(VOL)|🕒 $date"
