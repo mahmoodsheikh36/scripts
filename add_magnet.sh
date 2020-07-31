@@ -1,3 +1,5 @@
 #!/usr/bin/sh
 
+pgrep -x transmission-da || transmission-daemon
+
 transmission-remote -a "$1" && notify-send "added torrent" || notify-send "couldnt add magnet"
