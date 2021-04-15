@@ -5,6 +5,7 @@ import random
 import sqlite3
 import time
 import sys
+import subprocess
 from pathlib import Path
 
 current_time = lambda: int(round(time.time() * 1000))
@@ -24,7 +25,7 @@ if len(sys.argv) > 3:
     save_dir = sys.argv[3] + '/{}/'.format(subreddit)
 Path(save_dir).mkdir(exist_ok=True, parents=True)
 
-ALLOWED_FILE_EXTENSIONS = ['jpg', 'png', 'jpeg']
+IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
 
 def dict_factory(cursor, row):
     d = {}
@@ -59,9 +60,9 @@ USER_AGENTS = [
     'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2226.0 Safari/537.36',
 ]
 
-REDDIT_LISTING_LIMIT = 1000
+REDDIT_LISTING_LIMIT = 3000 # its actually 1000 but i wanna be safe
 REDDIT_MAX_REQUEST_LIMIT = 100
-HOT_POSTS_LIMIT = 15
+HOT_POSTS_LIMIT = REDDIT_MAX_REQUEST_LIMIT
 
 def get_user_agent():
     return random.choice(USER_AGENTS)
@@ -88,10 +89,24 @@ def get_data(url):
     return json.loads(response.text)['data']
 
 def download_file(url, local_path):
-    response = requests.get(url, allow_redirects=True, timeout=10,
-                            headers={'user-agent': get_user_agent()})
-    with open(local_path, 'wb+') as output_file:
-        output_file.write(response.content)
+    is_image = False
+    for image_extension in IMAGE_EXTENSIONS:
+        if url.endswith('.' + image_extension):
+            is_image = True
+    if is_image:
+        try:
+            response = requests.get(url, allow_redirects=True, timeout=10,
+                                    headers={'user-agent': get_user_agent()})
+            with open(local_path, 'wb+') as output_file:
+                output_file.write(response.content)
+            return True
+        except requests.exceptions.RequestException:
+            return False
+    else:
+        out = subprocess.run(['youtube-dl', url, '-o', local_path], stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL)
+        exit_code = out.returncode
+        return exit_code == 0
 
 def add_to_db(filename, reddit_post_data):
     d = reddit_post_data
@@ -133,21 +148,22 @@ def handle_post(post_data):
         else:
             print('already handled {}'.format(post_data['title']))
         return
-    download_this_post = False
-    for allowed_extension in ALLOWED_FILE_EXTENSIONS:
-        if post_data['url'].endswith('.{}'.format(allowed_extension)):
-            download_this_post = True
-    if not download_this_post:
-        print('skipping image for {}'.format(post_data['title']))
-        return
-    print('downloading image of {}'.format(post_data['title']))
+    is_image = False
+    for image_extension in IMAGE_EXTENSIONS:
+        if post_data['url'].endswith('.{}'.format(image_extension)):
+            is_image = True
+            print("downloading image of {}".format(post_data['title']))
+    if not is_image:
+        print('downloading something (maybe video/gif) of {}'.format(post_data['title']))
     filename = post_data['name'] + '_{}_{}'.format(post_data['ups'], post_data['title'])
     filename = filename.replace('/', '_')
     if len(filename) > 250:
         filename = filename[:250]
     try:
-        download_file(post_data['url'], save_dir + filename)
-        add_to_db(filename, post_data)
+        if not download_file(post_data['url'], save_dir + filename):
+            print('failed to download {}'.format(post_data['title']))
+        else:
+            add_to_db(filename, post_data)
     except requests.exceptions.RequestException as e:
         print('couldnt download {}'.format(post_data['title']))
 
@@ -155,9 +171,10 @@ if __name__ == '__main__':
     try:
         if post_type == 'hot':
             data = get_hot_posts_data()
-            for post in data['children']:
-                handle_post(post['data'])
-            after = data['after']
+            if data:
+                for post in data['children']:
+                    handle_post(post['data'])
+                after = data['after']
         elif post_type == 'top':
             cnt = 1
             after = None
@@ -165,8 +182,8 @@ if __name__ == '__main__':
             while data is not None:
                 for post in data['children']:
                     handle_post(post['data'])
+                    after = post['data']['name']
                 cnt += 1
                 data = get_top_posts_data(after, cnt)
     except KeyboardInterrupt:
-        print('quit')
         db_conn.close()
